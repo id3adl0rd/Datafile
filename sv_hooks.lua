@@ -33,10 +33,15 @@ hook.Add("PlayerLoadedCharacter", "Datafile", function(player, character)
 end)
 
 -- Check if the player has a datafile or not. If not, create one.
-hook.Add("PreCharacterDeleted", "Datafile", function(player, character)
-	local query = mysql:Delete("ix_datafile")
-		query:Where("id", character:GetID())
+hook.Add("CharacterDeleted", "Datafile", function(player, id, isCurrentChar)
+	local query = mysql:Select("ix_datafile")
+		query:Where("id", id)
 		query:Where("SteamID", player:SteamID64())
+		query:Callback(function(result)
+			local invQuery = mysql:Delete("ix_datafile")
+				invQuery:Where("id", id)
+			invQuery:Execute()
+		end)
 	query:Execute()
 end)
 
@@ -91,6 +96,10 @@ function Datafile:CreateDatafile(player)
 		local steamID = player:SteamID()
 
 		local defaultDatafile = self.Default.CivilianData
+
+		if (player:IsCombine()) then
+			defaultDatafile = self.Default.CombineData
+		end
 
 		-- Set all the values.
 		local insertObj = mysql:Insert("ix_datafile")
