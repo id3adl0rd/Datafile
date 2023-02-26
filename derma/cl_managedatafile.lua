@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN 
 
 -- Datafile management panel. Allows one to remove/edit entries.
@@ -13,11 +14,12 @@ function PANEL:Init()
 
 	self.List = vgui.Create("DListView", self) 
 	self.List:Dock(FILL) 
+	self.List:SetSortable(false)
+	self.List:SetMultiSelect(false)
 	self.List:AddColumn("date") 
 	self.List:AddColumn("category") 
 	self.List:AddColumn("text") 
 	self.List:AddColumn("points") 
-	self.List:AddColumn("sc") 
 	self.List:AddColumn("poster") 
 
 	self.Delete = vgui.Create("ixDfButton", self) 
@@ -44,27 +46,26 @@ function PANEL:PopulateEntries(target, datafile)
 	self:SetTitle(target:Name() .. "'s datafile") 
 
 	for k, v in pairs(datafile) do
-		local line = self.List:AddLine(
-		  datafile[k].date,
-		  datafile[k].category,
-		  datafile[k].text,
-		  datafile[k].points,
-		  datafile[k].sc,
-		  datafile[k].poster[1]
-		) 
+		self.List:AddLine(
+			v.date,
+			v.category,
+			v.text,
+			v.points,
+			v.poster[1]
+		)
 	end 
 
 	self.Delete.DoClick = function()
-	local key = self.List:GetSelectedLine() 
+		local key = self.List:GetSelectedLine() 
+		local line = self.List:GetLine(key)
 
-	if (key) then
-			local date = self.List:GetLine(key):GetValue(1) 
-			local category = self.List:GetLine(key):GetValue(2) 
-			local text = self.List:GetLine(key):GetValue(3) 
-			local poster = self.List:GetLine(key):GetValue(6) 
+		if (key) then
+			local date = line:GetValue(1) 
+			local category = line:GetValue(2) 
+			local text = line:GetValue(3) 
 
 			Datafile:RemoveEntry(target, key, date, category, text) 
-			self.List:RemoveLine(key) 
+			Datafile:RefreshManagefile(target) 
 		end 
   	end 
 end 
