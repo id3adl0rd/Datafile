@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN
 
 ix.log.AddType("datafile_entryadd", function(player, ...)
@@ -94,8 +95,8 @@ end
 
 -- Set a player their Civil Status.
 function Datafile:SetCivilStatus(player, poster, civilStatus)
-	if (!table.HasValue(PLUGIN.CivilStatus, civilStatus)) then return  end 
-	if (self:ReturnPermission(poster) < DATAFILE_PERMISSION_MINOR) then return  end 
+	if (!table.HasValue(Datafile.CivilStatus, civilStatus)) then return  end 
+	if (self:ReturnPermission(poster) < DATAFILE_PERMISSION_MEDIUM) then return  end 
 
 	local GenericData = self:ReturnGenericData(player) 
 	local datafile = self:ReturnDatafile(player) 
@@ -127,7 +128,7 @@ end
 
 -- Enable or disable a BOL on the player.
 function Datafile:SetBOL(bBOL, text, player, poster)
-	if (self:ReturnPermission(poster) <= DATAFILE_PERMISSION_MINOR) then return  end 
+	if (self:ReturnPermission(poster) <= DATAFILE_PERMISSION_MEDIUM) then return  end 
 
 	local GenericData = self:ReturnGenericData(player) 
 	local datafile = self:ReturnDatafile(player) 
