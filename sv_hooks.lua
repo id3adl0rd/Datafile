@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN
 
 util.AddNetworkString("UpdateLastSeen")
@@ -7,6 +8,7 @@ util.AddNetworkString("SetBOL")
 util.AddNetworkString("RequestPoints")
 util.AddNetworkString("RemoveDatafileLine")
 util.AddNetworkString("RefreshDatafile")
+util.AddNetworkString("RefreshManagefile")
 util.AddNetworkString("CreateRestrictedDatafile")
 util.AddNetworkString("CreateFullDatafile")
 util.AddNetworkString("CreateManagementPanel")
@@ -226,7 +228,7 @@ end)
 -- Remove a line from someone their datafile.
 net.Receive("RemoveDatafileLine", function (len, player)
 	local target = net.ReadEntity()
-	local key = net.ReadString()
+	local key = net.ReadUInt(8)
 	local date = net.ReadString()
 	local category = net.ReadString()
 	local text = net.ReadString()
@@ -239,4 +241,14 @@ net.Receive("RefreshDatafile", function (len, player)
 	local target = net.ReadEntity()
 
 	Datafile:HandleDatafile(player, target)
+end)
+
+net.Receive("RefreshManagefile", function (len, player)
+	local target = net.ReadEntity()
+	local result = Datafile:ReturnDatafile(player) 
+
+	net.Start("CreateManagementPanel")
+		net.WriteEntity(target)
+		net.WriteTable(result)
+	net.Send(player)
 end)

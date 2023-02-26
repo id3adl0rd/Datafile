@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN 
 
 surface.CreateFont("MiddleLabels", {
@@ -33,8 +34,8 @@ function Datafile:RemoveEntry(target, key, date, category, text)
         net.WriteEntity(target)
         net.WriteUInt(key, 8)
         net.WriteString(date)
-        net.WriteString(date)
-        net.WriteString(date)
+        net.WriteString(category)
+        net.WriteString(text)
     net.SendToServer()
 end
 
@@ -52,6 +53,15 @@ function Datafile:Refresh(target)
 	timer.Simple(0.05, function()
 		PLUGIN.Datafile:Close()
 		net.Start("RefreshDatafile")
+            net.WriteEntity(target)
+        net.SendToServer()
+	end)
+end
+
+function Datafile:RefreshManagefile(target)
+	timer.Simple(0.05, function()
+		PLUGIN.Managefile:Close()
+		net.Start("RefreshManagefile")
             net.WriteEntity(target)
         net.SendToServer()
 	end)
