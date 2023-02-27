@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN 
 Datafile = Datafile or {}
 
@@ -25,8 +26,8 @@ DATAFILE_PERMISSION_ELEVATED = 4
 
 -- Permissions for the numerous factions.
 Datafile.Permissions = {
-	[FACTION_CITIZEN] = DATAFILE_PERMISSION_FULL,
-	[FACTION_MPF] = DATAFILE_PERMISSION_FULL,
+	[FACTION_CITIZEN] = DATAFILE_PERMISSION_ELEVATED,
+	[FACTION_MPF] = DATAFILE_PERMISSION_ELEVATED,
 } 
 
 -- All the civil statuses. Just for verification purposes.
@@ -88,11 +89,14 @@ do
 	ix.command.Add("Datafile", COMMAND)
 
 	COMMAND = {}
+	COMMAND.description = "Clear the datafile of someone."
 	COMMAND.arguments = {ix.type.player}
 	COMMAND.superAdminOnly = true
 
 	function COMMAND:OnRun(client, target)
 		Datafile:ClearDatafile(target)
+
+		return target:Name() .. "'s file has been cleared."
 	end
 
 	ix.command.Add("ClearDatafile", COMMAND)
@@ -102,15 +106,15 @@ do
 	COMMAND.arguments = {ix.type.player}
 
 	function COMMAND:OnRun(client, target)
-		local permission = PLUGIN:ReturnPermission(client)
+		local permission = Datafile:ReturnPermission(client)
 
 		if (permission == DATAFILE_PERMISSION_ELEVATED) then
-			PLUGIN:ReturnDatafile(target, nil, true, function(result)
-				net.Start("CreateManagementPanel")
-					net.WriteEntity(target)
-					net.WriteTable(result)
-				net.Send(client)
-			end)
+			local result = Datafile:ReturnDatafile(client) 
+
+			net.Start("CreateManagementPanel")
+				net.WriteEntity(target)
+				net.WriteTable(result)
+			net.Send(client)
 		else
 			return "You are not authorized to access this datafile."
 		end
